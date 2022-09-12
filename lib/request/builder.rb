@@ -1,7 +1,7 @@
 
 require "dry-initializer"
 require "dry-schema"
-require "activesupport"
+require 'active_support/all'
 require_relative "builder/version"
 require_relative "builder/request_config"
 require_relative "builder/value_with_context"
@@ -34,6 +34,7 @@ module Request
     def call
       set_context
       do_request
+      result
     end
     alias perform call
 

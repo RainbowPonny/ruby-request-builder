@@ -15,7 +15,10 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/RainbowPonny/request-builder"
 
-  spec.files = Dir["lib/**/*"]
+  spec.files         = Dir["CHANGELOG.md", "LICENSE", "README.md", "request-builder.gemspec", "lib/**/*"]
+  spec.bindir        = "bin"
+  spec.executables   = []
+  spec.require_paths = ["lib"]
 
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "faraday", "~> 1.7.1"
