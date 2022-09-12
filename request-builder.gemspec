@@ -1,3 +1,6 @@
+lib = File.expand_path("lib", __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require_relative 'lib/request/builder/version'
 
 Gem::Specification.new do |spec|
@@ -20,8 +23,9 @@ Gem::Specification.new do |spec|
   spec.executables   = []
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "faraday", "~> 1.7.1"
   spec.add_dependency "dry-schema", "~> 1.9"
   spec.add_dependency "dry-initializer", "~> 3.0"
+
+  spec.add_runtime_dependency 'activesupport', '~> 5.0'
 end
