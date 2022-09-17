@@ -2,19 +2,20 @@ PATH
   remote: .
   specs:
     request-builder (0.1.0)
-      activesupport (>= 5.0)
+      activesupport (>= 5.0.0, < 7.1.0)
       dry-initializer (~> 3.0)
       dry-schema (~> 1.9)
       faraday (~> 1.7.1)
+      faraday_middleware (~> 1.2.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.4)
+    activesupport (5.2.8.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (>= 1.6, < 2)
-      minitest (>= 5.1)
-      tzinfo (~> 2.0)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
     concurrent-ruby (1.1.10)
     diff-lcs (1.5.0)
     dry-configurable (0.15.0)
@@ -61,6 +62,9 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
+    faraday_middleware (1.2.0)
+      faraday (~> 1.0)
+    ffaker (2.21.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     minitest (5.16.3)
@@ -80,13 +84,15 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.1)
     ruby2_keywords (0.0.5)
-    tzinfo (2.0.5)
-      concurrent-ruby (~> 1.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.10)
+      thread_safe (~> 0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  ffaker (~> 2.21)
   rake (~> 12.0)
   request-builder!
   rspec (~> 3.0)

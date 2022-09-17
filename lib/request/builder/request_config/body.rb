@@ -7,7 +7,7 @@ module Request
         @store = block
       end
 
-      def call
+      def to_h
         value_with_context(store)
       end
 

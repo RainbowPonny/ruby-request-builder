@@ -1,78 +1,100 @@
 module Request
   module Builder
     class RequestConfig
-      attrs = {
-        host: nil,
-        path: nil,
-        method: :get,
-        request_middleware: :json,
-        response_middleware: :json,
-        adapter: :net_http,
-        logger: nil,
-        timeout: 30
-      }
+      include ValueWithContext
 
-      attr_reader :context
-      attr_writer *attrs.keys
+      delegate_missing_to :context
 
-      not_provided = Object.new
+      attrs = [:host, :path, :method, :request_middleware, :response_middleware, :adapter, :logger, :timeout]
 
-      attrs.each do |attr, default_value|
-        define_method attr do |value = not_provided, &block|
-          if value === not_provided && block.nil?
-            result = instance_variable_get("@#{attr}") || default_value
-            result.is_a?(Proc) ? instance_eval { result.call(context) } : result
+      attr_reader :context, :body_conf, :headers_conf, :params_conf, :callbacks_conf, :stubs
+      attr_writer *attrs, :stubs
+
+      alias callbacks callbacks_conf
+
+      def initialize
+        @host = nil
+        @path = '/'
+        @method = :get
+        @request_middleware = :json
+        @response_middleware = :json
+        @adapter = :net_http
+        @stubs = Faraday::Adapter::Test::Stubs.new
+        @logger = nil
+        @timeout = 30
+        @body_conf = RequestConfig::Body.new
+        @headers_conf = RequestConfig::Headers.new
+        @params_conf = RequestConfig::Params.new
+        @callbacks_conf = RequestConfig::Callbacks.new
+        @response_schema = Dry::Schema.Params
+      end
+
+      attrs.each do |attr|
+        define_method attr do |value = nil, &block|
+          if value.nil? && block.nil?
+            value_with_context(instance_variable_get("@#{attr}"))
           else
             instance_variable_set("@#{attr}", block || value)
           end
         end
       end
 
-      def schema(value = nil, &block)
-        if value.nil? && block.nil?
-          @response_schema || Dry::Schema.Params
+      [:before_validate].each do |name|
+        define_method name do |&block|
+          callbacks.send(name, &block)
+        end
+      end
+
+      def stubs(value = nil, &block)
+        if block_given?
+          @stubs.instance_eval(&block)
+        elsif value
+          @stubs = value
         else
-          @response_schema = Dry::Schema.Params(&block) || value
+          @stubs
+        end
+      end
+
+      def schema(value = nil, &block)
+        if block_given?
+          @response_schema = Dry::Schema.Params(&block)
+        elsif value
+          @response_schema = value
+        else
+          @response_schema
         end
       end
 
       def body(&block)
-        @body ||= RequestConfig::Body.new
+        return body_conf.set(&block) if block_given?
 
-        return @body.set(&block) if block
-
-        @body
+        body_conf.to_h
       end
 
       def headers(&block)
-        @headers ||= RequestConfig::Headers.new
+        headers_conf.instance_eval(&block) if block_given?
 
-        @headers.instance_eval(&block) if block_given?
-
-        @headers
+        headers_conf
       end
 
       def header(key, value = nil, &block)
-        headers.header(key, value, &block)
+        headers_conf.header(key, value, &block)
       end
 
       def params(&block)
-        @params ||= RequestConfig::Params.new
+        params_conf.instance_eval(&block) if block_given?
 
-        @params.instance_eval(&block) if block_given?
-
-        @params
+        params_conf
       end
 
       def param(key, value = nil, &block)
-        params.param(key, value, &block)
+        params_conf.param(key, value, &block)
       end
 
       def context=(context)
         @context = context
-        body.context = context
-        headers.context = context
-        params.context = context
+
+        [body_conf, headers_conf, params_conf, callbacks_conf].each { |cnf| cnf.context = context }
       end
 
       def [] property

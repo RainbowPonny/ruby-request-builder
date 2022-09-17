@@ -5,7 +5,7 @@ require_relative 'lib/request/builder/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "request-builder"
-  spec.version       = Request::Builder::VERSION
+  spec.version       = Request::Builder::VERSION.dup
   spec.authors       = ["Anton Kostyuk"]
   spec.email         = ["anton.kostuk.2012@gmail.com"]
 
@@ -24,8 +24,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "faraday", "~> 1.7.1"
+  spec.add_dependency "faraday_middleware", "~> 1.2.0"
   spec.add_dependency "dry-schema", "~> 1.9"
   spec.add_dependency "dry-initializer", "~> 3.0"
 
-  spec.add_runtime_dependency 'activesupport', '~> 5.0'
+  spec.add_runtime_dependency 'activesupport', ">= 5.0.0", "< 7.1.0"
+
+  spec.add_development_dependency "ffaker", "~> 2.21"
+  spec.add_development_dependency "rspec", "~> 3.0"
 end

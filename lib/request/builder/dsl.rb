@@ -16,7 +16,7 @@ module Request
         end
 
         def configure(conf = nil, &block)
-          @config = conf.dup if config
+          @config = conf.dup if conf
 
           config.instance_eval(&block) if block
         end

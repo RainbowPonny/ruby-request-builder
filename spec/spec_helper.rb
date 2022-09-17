@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "request/builder"
+require "ffaker"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

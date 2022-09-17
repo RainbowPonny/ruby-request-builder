@@ -21,6 +21,12 @@ module Request
         end
       end
 
+      def [] key
+        raise NotImplementedError unless store.is_a?(Enumerable)
+
+        value_with_context(store[key])
+      end
+
       private
 
       def store

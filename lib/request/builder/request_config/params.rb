@@ -2,15 +2,15 @@ module Request
   module Builder
     class RequestConfig::Params < Request::Builder::RequestConfig::Base
       def param(key, value = nil, &block)
-        raise ArgumentError, 'Must provide a value or block' unless value || block
+        raise ArgumentError, 'Must provide a value or block' if !value && !block
 
-        store[key] = block.nil? ? value : block
+        store[key] = block || value
       end
 
       private
 
       def store
-        @store ||= {}
+        @store ||= HashWithIndifferentAccess.new
       end
     end
   end
