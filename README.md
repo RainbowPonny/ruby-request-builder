@@ -1,8 +1,6 @@
 # Request::Builder
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/request/builder`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Simple DSL wrapper for faraday gem
 
 ## Installation
 
@@ -22,7 +20,75 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Include `Request::Builder` to your client class and describe your request using DSL
+
+```ruby
+class MyApiClient
+  include Request::Builder
+
+  option :my_option
+  option :my_header_value
+
+  configure do
+    adapter :net_http
+    response_middleware :json
+    request_middleware :json
+    method :get
+    logger Logger.new(STDOUT)
+    timeout 10
+
+    host 'http://api.forismatic.com/'
+    path '/api/1.0/'
+
+    params do
+      # you can pass a block or lambda to params
+      # this allows you to use object variables or configuration variables 
+      param 'param1', &:my_option
+      param 'param2', -> { "#{my_option}" }
+      param 'param3' { my_option }
+      param 'param4' 'string'
+    end
+  
+    headers do
+      header 'header1', &:my_header_value
+    end
+
+    # in body you can use object variables or configuration variables too
+    body do
+      {
+        'hello' => lang,
+        'path' => config.path
+      }
+    end
+
+    # this callback executes after receiving the response
+    before_validate do |body|
+      body.delete('unnecessary_param')
+      body.deep_symbolize_keys
+      body
+    end
+
+    # you can use dry-schema to validate response
+    schema do
+      required(:status).value(eql?: 'success')
+    end
+  end
+end
+```
+
+After you describe your request class you can use it:
+
+```ruby
+result = MyApiClient.call(my_option: 'some_value', my_header_value: 'header_value')
+
+result.success? # true if status code == 200 and schema is valid 
+result.failure?
+result.status # result code - Integer
+result.headers # hash of headers
+result.body # raw body from request
+result.schema_result # result of dry-schema
+result.full_errors # array of errors from dry-schema
+```
 
 ## Development
 
