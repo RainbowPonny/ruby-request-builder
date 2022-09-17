@@ -9,14 +9,14 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Anton Kostyuk"]
   spec.email         = ["anton.kostuk.2012@gmail.com"]
 
-  spec.summary       = %q{Request DSL}
-  spec.description   = %q{Request DSL}
-  spec.homepage      = "https://github.com/RainbowPonny/request-builder"
+  spec.summary       = %q{Ruby Request DSL}
+  spec.description   = %q{Simple DSL wrapper for faraday gem}
+  spec.homepage      = "https://github.com/RainbowPonny/ruby-request-builder"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/RainbowPonny/request-builder"
+  spec.metadata["source_code_uri"] = "https://github.com/RainbowPonny/ruby-request-builder"
 
   spec.files         = Dir["CHANGELOG.md", "LICENSE", "README.md", "request-builder.gemspec", "lib/**/*"]
   spec.bindir        = "bin"
