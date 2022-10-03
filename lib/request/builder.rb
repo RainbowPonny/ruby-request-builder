@@ -25,8 +25,8 @@ module Request
 
       class << base
         alias_method :__new, :new
-        def new(*args)
-          e = __new(*args)
+        def new(*args, **kwargs)
+          e = __new(*args, **kwargs)
           e.send(:set_config_context)
           e
         end
@@ -34,8 +34,8 @@ module Request
     end
 
     module ClassMethods
-      def call(**args)
-        new(**args).call
+      def call(*args, **kwargs)
+        new(*args, **kwargs).call
       end
       alias perform call
     end
