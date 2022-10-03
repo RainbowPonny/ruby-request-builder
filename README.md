@@ -45,7 +45,7 @@ class MyApiClient
       # this allows you to use object variables or configuration variables 
       param 'param1', &:my_option
       param 'param2', -> { "#{my_option}" }
-      param 'param3' { my_option }
+      param('param3') { my_option }
       param 'param4' 'string'
     end
   
