@@ -40,6 +40,12 @@ module Request
       alias perform call
     end
 
+    def self.default_adapter(adapter = nil)
+      @default_adapter = adapter if adapter
+
+      @default_adapter || :net_http
+    end
+
     def call
       do_request
       result

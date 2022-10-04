@@ -18,7 +18,7 @@ module Request
         @method = :get
         @request_middleware = :json
         @response_middleware = :json
-        @adapter = :net_http
+        @adapter = Request::Builder.default_adapter
         @stubs = Faraday::Adapter::Test::Stubs.new
         @logger = nil
         @timeout = 30

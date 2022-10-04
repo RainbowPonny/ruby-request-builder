@@ -156,4 +156,16 @@ RSpec.describe Request::Builder do
       expect(subject.call).to be_a_kind_of(Request::Builder::Result)
     end
   end
+
+  describe '.default_adapter' do
+    class TestApiAdapter
+      include Request::Builder
+    end
+
+    it 'sets default faraday adapter' do
+      Request::Builder.default_adapter(:httpclient)
+
+      expect(TestApiAdapter.config.adapter).to eq(:httpclient)
+    end
+  end
 end
