@@ -19,18 +19,12 @@ RSpec.describe Request::Builder do
       host 'http://api.com/'
       path { "/api/#{option1}/" }
 
-      headers do
-        header 'header1', -> { option1 }
-      end
-
+      header 'header1', -> { option1 }
       header 'header2', &:option2
 
-      params do
-        param 'param1', -> { config.body[:hello] }
-        param 'param2', &:option2
-        param 'param3' do option3 end
-      end
-
+      param 'param1', -> { config.body[:hello] }
+      param 'param2', &:option2
+      param 'param3' do option3 end
       param 'param4', -> { option4 }
 
       body do
@@ -75,17 +69,17 @@ RSpec.describe Request::Builder do
 
     it 'sets right params' do
       aggregate_failures do
-        expect(subject.config.params[:param1]).to eq(option1)
-        expect(subject.config.params[:param2]).to eq(option2)
-        expect(subject.config.params[:param3]).to eq(option3)
-        expect(subject.config.params[:param4]).to eq(option4)
+        expect(subject.config.param(:param1)).to eq(option1)
+        expect(subject.config.param(:param2)).to eq(option2)
+        expect(subject.config.param(:param3)).to eq(option3)
+        expect(subject.config.param(:param4)).to eq(option4)
       end
     end
 
     it 'sets right headers' do
       aggregate_failures do
-        expect(subject.config.headers[:header1]).to eq(option1)
-        expect(subject.config.headers[:header2]).to eq(option2)
+        expect(subject.config.header(:header1)).to eq(option1)
+        expect(subject.config.header(:header2)).to eq(option2)
       end
     end
 

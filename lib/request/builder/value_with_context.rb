@@ -5,7 +5,7 @@ module Request
         return obj unless obj.is_a?(Proc)
 
         case obj.arity
-        when 1, -1, -2 then instance_exec(@context, &obj)
+        when 1, -1, -2 then instance_exec(self, &obj)
         else instance_exec(&obj)
         end
       end

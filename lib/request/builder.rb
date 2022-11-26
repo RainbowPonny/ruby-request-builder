@@ -6,11 +6,6 @@ require "active_support/core_ext/module/delegation"
 require_relative "builder/version"
 require_relative "builder/value_with_context"
 require_relative "builder/request_config"
-require_relative "builder/request_config/base"
-require_relative "builder/request_config/body"
-require_relative "builder/request_config/params"
-require_relative "builder/request_config/headers"
-require_relative "builder/request_config/callbacks"
 require_relative "builder/result"
 require_relative "builder/dsl"
 require_relative "builder/connection"
@@ -64,11 +59,11 @@ module Request
       @response = connection.send(config.method.downcase, config.path) do |req|
         req.options.timeout = config.timeout
 
-        config.params.each do |key, value|
+        config.each_param do |key, value|
           req.params[key] = value
         end
 
-        config.headers.each do |key, value|
+        config.each_header do |key, value|
           req.headers[key] = value
         end
 

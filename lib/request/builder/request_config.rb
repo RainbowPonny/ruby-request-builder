@@ -5,14 +5,15 @@ module Request
 
       delegate_missing_to :context
 
-      attrs = [:host, :path, :method, :request_middleware, :response_middleware, :adapter, :logger, :timeout]
+      attrs = [:params, :callbacks, :headers, :body, :host, :path, :method, :request_middleware, :response_middleware, :adapter, :logger, :timeout]
 
       attr_reader :context, :body_conf, :headers_conf, :params_conf, :callbacks_conf, :stubs
-      attr_writer *attrs, :stubs
+      attr_writer *attrs, :stubs, :context
 
       alias callbacks callbacks_conf
 
       def initialize
+        @body = nil
         @host = nil
         @path = '/'
         @method = :get
@@ -22,11 +23,12 @@ module Request
         @stubs = Faraday::Adapter::Test::Stubs.new
         @logger = nil
         @timeout = 30
-        @body_conf = RequestConfig::Body.new
-        @headers_conf = RequestConfig::Headers.new
-        @params_conf = RequestConfig::Params.new
-        @callbacks_conf = RequestConfig::Callbacks.new
+        @body = nil
         @response_schema = Dry::Schema.Params
+        @headers = HashWithIndifferentAccess.new
+        @params = HashWithIndifferentAccess.new
+        @callbacks = HashWithIndifferentAccess.new
+        @context = nil
       end
 
       attrs.each do |attr|
@@ -41,7 +43,7 @@ module Request
 
       [:before_validate].each do |name|
         define_method name do |&block|
-          callbacks.send(name, &block)
+          @callbacks[name] = block
         end
       end
 
@@ -65,36 +67,32 @@ module Request
         end
       end
 
-      def body(&block)
-        return body_conf.set(&block) if block_given?
-
-        body_conf.to_h
-      end
-
-      def headers(&block)
-        headers_conf.instance_eval(&block) if block_given?
-
-        headers_conf
-      end
-
       def header(key, value = nil, &block)
-        headers_conf.header(key, value, &block)
-      end
-
-      def params(&block)
-        params_conf.instance_eval(&block) if block_given?
-
-        params_conf
+        if value.nil? && block.nil?
+          value_with_context(@headers[key])
+        else
+          @headers[key] = block || value
+        end
       end
 
       def param(key, value = nil, &block)
-        params_conf.param(key, value, &block)
+        if value.nil? && block.nil?
+          value_with_context(@params[key])
+        else
+          @params[key] = block || value
+        end
       end
 
-      def context=(context)
-        @context = context
+      def each_header
+        @headers.each do |key, value|
+          yield key, value_with_context(value)
+        end
+      end
 
-        [body_conf, headers_conf, params_conf, callbacks_conf].each { |cnf| cnf.context = context }
+      def each_param
+        @params.each do |key, value|
+          yield key, value_with_context(value)
+        end
       end
 
       def [] property
