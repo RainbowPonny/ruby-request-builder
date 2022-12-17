@@ -7,10 +7,8 @@ module Request
 
       attrs = [:params, :callbacks, :headers, :body, :host, :path, :method, :request_middleware, :response_middleware, :adapter, :logger, :timeout]
 
-      attr_reader :context, :body_conf, :headers_conf, :params_conf, :callbacks_conf, :stubs
+      attr_reader :context, :stubs
       attr_writer *attrs, :stubs, :context
-
-      alias callbacks callbacks_conf
 
       def initialize
         @body = nil
@@ -23,11 +21,7 @@ module Request
         @stubs = Faraday::Adapter::Test::Stubs.new
         @logger = nil
         @timeout = 30
-        @body = nil
         @response_schema = Dry::Schema.Params
-        @headers = HashWithIndifferentAccess.new
-        @params = HashWithIndifferentAccess.new
-        @callbacks = HashWithIndifferentAccess.new
         @context = nil
       end
 
@@ -43,8 +37,20 @@ module Request
 
       [:before_validate].each do |name|
         define_method name do |&block|
-          @callbacks[name] = block
+          callbacks[name] = block
         end
+      end
+
+      def headers
+        @headers ||= HashWithIndifferentAccess.new
+      end
+
+      def params
+        @params ||= HashWithIndifferentAccess.new
+      end
+
+      def callbacks
+        @callbacks ||= HashWithIndifferentAccess.new
       end
 
       def stubs(value = nil, &block)
@@ -69,28 +75,28 @@ module Request
 
       def header(key, value = nil, &block)
         if value.nil? && block.nil?
-          value_with_context(@headers[key])
+          value_with_context(headers[key])
         else
-          @headers[key] = block || value
+          headers[key] = block || value
         end
       end
 
       def param(key, value = nil, &block)
         if value.nil? && block.nil?
-          value_with_context(@params[key])
+          value_with_context(params[key])
         else
-          @params[key] = block || value
+          params[key] = block || value
         end
       end
 
       def each_header
-        @headers.each do |key, value|
+        headers.each do |key, value|
           yield key, value_with_context(value)
         end
       end
 
       def each_param
-        @params.each do |key, value|
+        params.each do |key, value|
           yield key, value_with_context(value)
         end
       end

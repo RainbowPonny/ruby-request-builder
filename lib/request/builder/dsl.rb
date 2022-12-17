@@ -11,12 +11,12 @@ module Request
       end
 
       module ClassMethods
-        def config
-          @config ||= RequestConfig.new
+        def config(conf=nil)
+          @config ||= conf.deep_dup || RequestConfig.new
         end
 
         def configure(conf = nil, &block)
-          @config = conf.dup if conf
+          config(conf)
 
           config.instance_eval(&block) if block
         end
