@@ -10,19 +10,23 @@ module Request
       attr_reader :context, :stubs
       attr_writer *attrs, :stubs, :context
 
-      def initialize
-        @body = nil
-        @host = nil
-        @path = '/'
-        @method = :get
-        @request_middleware = :json
-        @response_middleware = :json
-        @adapter = Request::Builder.default_adapter
-        @stubs = Faraday::Adapter::Test::Stubs.new
-        @logger = nil
-        @timeout = 30
-        @response_schema = Dry::Schema.Params
+      def initialize(**params)
+        @body = params[:body]
+        @host = params[:host]
+        @path = params[:path] || '/'
+        @method = params[:method] ||:get
+        @request_middleware = params[:request_middleware] || :json
+        @response_middleware = params[:response_middleware] || :json
+        @adapter = params[:adapter] || Request::Builder.default_adapter
+        @stubs = params[:stubs] || Faraday::Adapter::Test::Stubs.new
+        @logger = params[:logger]
+        @timeout = params[:timeout] || 30
+        @response_schema = params[:response_schema] || Dry::Schema.Params
         @context = nil
+        @body = params[:body]
+        @params = params[:params] || HashWithIndifferentAccess.new
+        @headers = params[:headers] || HashWithIndifferentAccess.new
+        @callbacks = params[:callbacks] || HashWithIndifferentAccess.new
       end
 
       attrs.each do |attr|
@@ -39,18 +43,6 @@ module Request
         define_method name do |&block|
           callbacks[name] = block
         end
-      end
-
-      def headers
-        @headers ||= HashWithIndifferentAccess.new
-      end
-
-      def params
-        @params ||= HashWithIndifferentAccess.new
-      end
-
-      def callbacks
-        @callbacks ||= HashWithIndifferentAccess.new
       end
 
       def stubs(value = nil, &block)
@@ -103,6 +95,26 @@ module Request
 
       def [] property
         instance_variable_get("@#{property}".to_sym)
+      end
+
+      def dup
+        Request::Builder::RequestConfig.new(
+          body: @body.dup,
+          host: @host.dup,
+          path: @path.dup,
+          method: @method,
+          request_middleware: @request_middleware,
+          response_middleware: @response_middleware,
+          adapter: @adapter,
+          stubs: @stubs,
+          logger: @logger,
+          timeout: @timeout,
+          response_schema: @response_schema,
+          body: @body.dup,
+          params: @params.dup,
+          headers: @headers.dup,
+          callbacks: @callbacks.dup
+        )
       end
 
       Module.new do
