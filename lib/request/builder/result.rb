@@ -12,7 +12,7 @@ module Request
         @response = response
         @context = context
         @before_validate = config.callbacks[:before_validate]
-        @body = @before_validate ? @before_validate.call(response.body.to_h) : response.body.to_h
+        @body = @before_validate ? @before_validate.call(response.body) : response.body
       end
 
       def success?

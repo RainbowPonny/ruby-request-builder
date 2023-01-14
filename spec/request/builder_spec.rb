@@ -128,7 +128,7 @@ RSpec.describe Request::Builder do
 
     it 'sends right body' do
       TestApi.config.stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-        stub.get("/api/#{option1}/") { |env| [ 200, {}, env.body ]}
+        stub.get("/api/#{option1}/") { |env| [ 200, {}, JSON.parse(env.body) ]}
       end
 
       expect(subject.call.body).to include(hello: option1, world: option5)

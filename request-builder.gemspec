@@ -23,8 +23,7 @@ Gem::Specification.new do |spec|
   spec.executables   = []
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "faraday", "~> 1.7.1"
-  spec.add_dependency "faraday_middleware", "~> 1.2.0"
+  spec.add_dependency "faraday", "~> 2.2.0"
   spec.add_dependency "dry-schema", "~> 1.9"
   spec.add_dependency "dry-initializer", "~> 3.0"
 

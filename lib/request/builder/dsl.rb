@@ -12,7 +12,7 @@ module Request
 
       module ClassMethods
         def config(conf=nil)
-          @config ||= conf.deep_dup || RequestConfig.new
+          @config ||= conf&.deep_dup || RequestConfig.new
         end
 
         def configure(conf = nil, &block)
