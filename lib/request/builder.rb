@@ -60,6 +60,8 @@ module Request
         req.options.timeout = config.timeout
 
         config.each_param do |key, value|
+          next unless value
+
           req.params[key] = value
         end
 
